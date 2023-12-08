@@ -1,7 +1,7 @@
-use rlbox_from_rust::hello;
+mod bindings;
 
 fn main() {
     unsafe {
-        println!("{}", hello());
+        println!("{:?}", bindings::invoke_hello());
     }
 }

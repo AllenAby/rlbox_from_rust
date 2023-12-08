@@ -2,7 +2,7 @@
 extern "C" {
 #endif
 
-int hello();
+void invoke_hello();
 
 #ifdef __cplusplus
 }

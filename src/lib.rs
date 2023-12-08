@@ -2,4 +2,7 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
-include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+#[no_mangle]
+pub extern "C" fn hello_from_rust() -> i32 {
+    return 100;
+}

@@ -1,6 +1,5 @@
 [package]
 name = "rlbox_from_rust"
-build = "build.rs"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,3 +9,6 @@ edition = "2021"
 
 [build-dependencies]
 bindgen = "0.69.1"
+
+[lib]
+crate-type = ["cdylib"]
