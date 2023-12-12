@@ -18,10 +18,10 @@ WASM2C=$(RLBOX_ROOT)/build/_deps/mod_wasm2c-src/bin/wasm2c
 WASM_CFLAGS=-Wl,--export-all -Wl,--no-entry -Wl,--growable-table -Wl,--stack-first -Wl,-z,stack-size=1048576 -Wl,--import-memory -Wl,--import-table
 
 
-all: target/wasm32-wasi/debug/rlbox_from_rust.wasm mylib.wasm.c mylib.wasm.o rlbox_wrapper.o librlbox_wrapper.a src/bindings.rs rlbox_from_rust
+all: target/wasm32-wasi/debug/rlbox_from_rust.wasm mylib.wasm.c mylib.wasm.o librlbox_wrapper.dylib src/bindings.rs rlbox_from_rust run
 
 clean:
-	rm -rf target/wasm32-wasi/debug/rlbox_from_rust.wasm mylib.wasm.c mylib.wasm.h librlbox_wrapper.a *.o src/bindings.rs
+	rm -rf target/wasm32-wasi/debug/rlbox_from_rust.wasm mylib.wasm.c mylib.wasm.h *.o src/bindings.rs *.dylib
 	cargo clean
 
 # Step 1: build our library of functions to WASM
@@ -36,18 +36,18 @@ mylib.wasm.c: target/wasm32-wasi/debug/rlbox_from_rust.wasm
 mylib.wasm.o: mylib.wasm.c
 	$(CC) -c $(WASI_RUNTIME_FILES) -c $(WASI_RUNTIME_FILES2) -I$(RLBOX_INCLUDE) -I$(RLBOX_ROOT)/include -I$(WASM2C_RUNTIME_PATH) mylib.wasm.c
 
-# Step 4: linking our RLBox wrapper functions with our library of functions and RLBox
-rlbox_wrapper.o: mylib.wasm.o src/rlbox_wrapper.cpp src/lib.h
-	$(CXX) -std=c++17 -c -o rlbox_wrapper.o src/rlbox_wrapper.cpp -I$(RLBOX_INCLUDE) -I$(RLBOX_ROOT)/include -I$(WASM2C_RUNTIME_PATH)
+# Step 4: linking our RLBox wrapper functions with our library of functions and RLBox into a shared library
+librlbox_wrapper.dylib: mylib.wasm.o src/rlbox_wrapper.cpp src/rlbox_wrapper.h src/lib.h
+	$(CXX) -std=c++17 -shared -o librlbox_wrapper.dylib src/rlbox_wrapper.cpp -I$(RLBOX_INCLUDE) -I$(RLBOX_ROOT)/include -I$(WASM2C_RUNTIME_PATH) *.o -lpthread
 
-# Step 5: wrapping all these object files to a static library
-librlbox_wrapper.a: rlbox_wrapper.o
-	ar rcs librlbox_wrapper.a *.o
-
-# Step 6: use bindgen to generate Rust bindings for our RLBox wrappers
+# Step 5: use bindgen to generate Rust bindings for our RLBox wrappers
 src/bindings.rs: src/rlbox_wrapper.h
 	bindgen src/rlbox_wrapper.h -o src/bindings.rs
 
-# Step 7: build main while pointing to our static library
-rlbox_from_rust: librlbox_wrapper.a src/bindings.rs
-	cargo build --config 'build.rustflags = ["-L", "./", "-l", "static=rlbox_wrapper"]'
+# Step 6: build main while pointing to our shared library
+rlbox_from_rust: librlbox_wrapper.dylib src/bindings.rs
+	cargo -v build --config 'build.rustflags = ["-L", "./", "-l", "dylib=rlbox_wrapper"]'
+
+# Step 7: run while pointing to shared library
+run: rlbox_from_rust
+	cargo run --config 'build.rustflags = ["-L", "./", "-l", "dylib=rlbox_wrapper"]'

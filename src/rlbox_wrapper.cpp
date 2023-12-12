@@ -1,3 +1,5 @@
+#include "rlbox_wrapper.h"
+
 // ANCHOR: imports
 // We're going to use RLBox in a single-threaded environment.
 #define RLBOX_USE_EXCEPTIONS
