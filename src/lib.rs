@@ -3,6 +3,6 @@
 #![allow(non_snake_case)]
 
 #[no_mangle]
-pub extern "C" fn hello_from_rust() -> i32 {
+pub extern "C" fn hello() -> i32 {
     return 100;
 }

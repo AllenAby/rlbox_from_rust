@@ -29,9 +29,9 @@ void invoke_hello() {
   rlbox_sandbox_rlbox_from_rust sandbox;
   sandbox.create_sandbox();
 
-  sandbox.template INTERNAL_invoke_with_func_ptr<decltype(hello_from_rust)>(
-        "hello_from_rust",
-        sandbox_lookup_symbol_helper(RLBOX_USE_STATIC_CALLS(), hello_from_rust)).copy_and_verify([](int ret) { printf("%d\n", ret); });
+  sandbox.template INTERNAL_invoke_with_func_ptr<decltype(hello)>(
+        "hello",
+        sandbox_lookup_symbol_helper(RLBOX_USE_STATIC_CALLS(), hello)).copy_and_verify([](int ret) { printf("%d\n", ret); });
 
   // destroy sandbox
   sandbox.destroy_sandbox();
