@@ -2,7 +2,8 @@
 extern "C" {
 #endif
 
-void invoke_hello();
+int invoke_hello();
+int invoke_sum(int, int);
 
 #ifdef __cplusplus
 }

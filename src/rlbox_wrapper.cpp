@@ -24,16 +24,33 @@ using namespace rlbox;
 // Define base type for mylib/rust_from_c
 RLBOX_DEFINE_BASE_TYPES_FOR(rlbox_from_rust, wasm2c);
 
-void invoke_hello() {
+int invoke_hello() {
   // Declare and create a new sandbox
   rlbox_sandbox_rlbox_from_rust sandbox;
   sandbox.create_sandbox();
 
-  sandbox.template INTERNAL_invoke_with_func_ptr<decltype(hello)>(
+  auto ret = sandbox.template INTERNAL_invoke_with_func_ptr<decltype(hello)>(
         "hello",
-        sandbox_lookup_symbol_helper(RLBOX_USE_STATIC_CALLS(), hello)).copy_and_verify([](int ret) { printf("%d\n", ret); });
+        sandbox_lookup_symbol_helper(RLBOX_USE_STATIC_CALLS(), hello)).copy_and_verify([](int ret) { return ret; });
 
   // destroy sandbox
   sandbox.destroy_sandbox();
+
+  return ret;
 }
 
+int invoke_sum(int a, int b) {
+  // Declare and create a new sandbox
+  rlbox_sandbox_rlbox_from_rust sandbox;
+  sandbox.create_sandbox();
+
+  auto ret = sandbox.template INTERNAL_invoke_with_func_ptr<decltype(sum)>(
+        "sum",
+        sandbox_lookup_symbol_helper(RLBOX_USE_STATIC_CALLS(), sum),
+        a, b).copy_and_verify([](int ret) { return ret; });
+
+  // destroy sandbox
+  sandbox.destroy_sandbox();
+
+  return ret;
+}
