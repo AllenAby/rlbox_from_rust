@@ -54,3 +54,18 @@ int invoke_sum(int a, int b) {
 
   return ret;
 }
+
+float invoke_train_and_predict() {
+  // Declare and create a new sandbox
+  rlbox_sandbox_rlbox_from_rust sandbox;
+  sandbox.create_sandbox();
+
+  auto ret = sandbox.template INTERNAL_invoke_with_func_ptr<decltype(train_and_predict)>(
+        "train_and_predict",
+        sandbox_lookup_symbol_helper(RLBOX_USE_STATIC_CALLS(), train_and_predict)).copy_and_verify([](float ret) { return ret; });
+
+  // destroy sandbox
+  sandbox.destroy_sandbox();
+
+  return ret;
+}
