@@ -2,9 +2,9 @@
 extern "C" {
 #endif
 
-int invoke_hello();
+float invoke_hello();
 int invoke_sum(int, int);
-float invoke_train_and_predict();
+float invoke_train_and_predict(const char*);
 
 #ifdef __cplusplus
 }

@@ -3,9 +3,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    int hello();
+    float hello();
     int sum(int, int);
-    float train_and_predict();
+    float train_and_predict(const char*);
 #ifdef __cplusplus
 }
 #endif
