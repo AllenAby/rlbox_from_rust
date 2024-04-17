@@ -23,6 +23,7 @@ all: target/wasm32-rlbox/debug/mylib.wasm mylib.wasm.c mylib.wasm.o librlbox_wra
 clean:
 	rm -rf target/wasm32-rlbox/debug/mylib.wasm mylib.wasm.c mylib.wasm.h *.o bin/bindings.rs *.dylib bin/*.dylib
 	cargo clean
+	rm -rf bin/target/
 
 # Step 1: build our library of functions to WASM
 target/wasm32-rlbox/debug/mylib.wasm: src/lib.rs
